@@ -7,8 +7,8 @@
 // @match        https://hot-potato.reddit.com/embed*
 // @icon         https://styles.redditmedia.com/t5_4eiiz1/styles/communityIcon_ojy24r8j90o81.jpg
 // @grant        none
-// @downloadURL  https://gist.githubusercontent.com/CorentinGC/900a7b7c55b608a77bdfc8cb3a26a88a/raw/kameto.user.js?v=0.3
-// @updateURL    https://gist.githubusercontent.com/CorentinGC/900a7b7c55b608a77bdfc8cb3a26a88a/raw/kameto.user.js?v=0.3
+// @downloadURL  https://github.com/CorentinGC/reddit-place-kcorp/raw/main/kcorp.user.js?v=1.03
+// @updateURL    https://github.com/CorentinGC/reddit-place-kcorp/raw/main/kcorp.user.js?v=1.03
 // ==/UserScript==
 const IMG_URL = 'https://github.com/CorentinGC/reddit-place-kcorp/raw/main/overlay.png?v=1.03'
 if (window.top !== window.self) {
