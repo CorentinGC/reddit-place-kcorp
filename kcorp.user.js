@@ -13,15 +13,9 @@
 const IMG_URL = 'https://github.com/CorentinGC/reddit-place-kcorp/raw/main/overlay.png?v=1.03'
 if (window.top !== window.self) {
     window.addEventListener('load', () => {
-            document.getElementsByTagName("mona-lisa-embed")[0].shadowRoot.children[0].getElementsByTagName("mona-lisa-canvas")[0].shadowRoot.children[0].appendChild(
-        (function () {
-            const i = document.createElement("img");
-            i.src = IMG_URL;
-            i.style = "position: absolute;left: 0;top: 0;image-rendering: pixelated;width: 2000px;height: 1000px;";
-            console.log(i);
-            return i;
-        })())
- 
+        const i = document.createElement("img");
+        i.src = IMG_URL;
+        i.style = "position: absolute;left: 0;top: 0;image-rendering: pixelated;width: 2000px;height: 1000px;";
+        document.getElementsByTagName("mona-lisa-embed")[0].shadowRoot.children[0].getElementsByTagName("mona-lisa-canvas")[0].shadowRoot.children[0].appendChild(i)
     }, false);
- 
 }
