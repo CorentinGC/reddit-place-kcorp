@@ -16,33 +16,26 @@ function overlayURL() {
 }
 
 if (window.top !== window.self) {
-
     window.addEventListener('load', () => {
-        document.getElementsByTagName("mona-lisa-embed")[0].shadowRoot.children[0].getElementsByTagName("mona-lisa-canvas")[0].shadowRoot.children[0].appendChild((function() {
-
-            const overlay= document.createElement("img");
-            overlay.src = overlayURL();
-            overlay.style = "display: block; position: absolute; left: 0; top: 0; image-rendering: pixelated; width: 2000px; height: 2000px;";
-
-            window.addEventListener("keydown", function (event) {
-            
-                // Hide the image with the F4 key
-                if (event.key == "F4") {
-
-                    // Toggle overlay
-                    var display = (overlay.style.display == "none" ? "block" : "none");
-
-                    overlay.style.display = display;
-
-                    //Reload overlay
-                    if (display == "block") {
-                        overlay.src = overlayURL()
+            document.getElementsByTagName("mona-lisa-embed")[0].shadowRoot.children[0].getElementsByTagName("mona-lisa-canvas")[0].shadowRoot.children[0].appendChild(
+        (function () {
+            const i = document.createElement("img");
+            i.src = overlayURL();
+            i.style = "position: absolute;left: 0;top: 0;image-rendering: pixelated;width: 2000px;height: 2000px;";
+            console.log(i);
+            document.addEventListener("keydown", function(event) {
+                if(event.key == "F4"){
+                    if (i.style.display === "none") {
+                        i.style.display = "block";
+                        i.style.src = overlayURL()
+                    } else {
+                        i.style.display = "none";
                     }
                 }
             });
-
-            return overlay;
+            return i;
         })())
  
     }, false);
+ 
 }
