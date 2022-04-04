@@ -16,6 +16,15 @@ if (window.top !== window.self) {
             i.src = "https://github.com/CorentinGC/reddit-place-kcorp/raw/main/overlay.png";
             i.style = "position: absolute;left: 0;top: 0;image-rendering: pixelated;width: 2000px;height: 2000px;";
             console.log(i);
+            document.addEventListener("keydown", function(event) {
+                if(event.key == "F4"){
+                    if (i.style.display === "none") {
+                        i.style.display = "block";
+                    } else {
+                        i.style.display = "none";
+                    }
+                }
+            });
             return i;
         })())
  
