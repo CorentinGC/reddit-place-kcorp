@@ -12,7 +12,7 @@
 function overlayURL() {
 
     //Cache busted URL
-    return "https://github.com/CorentinGC/reddit-place-kcorp/raw/main/overlay.png?" + (new Date().getTime());
+    return "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png?time=" + (new Date().getTime());
 }
 
 if (window.top !== window.self) {
