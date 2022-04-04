@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Place - Armée de Kameto
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @updateURL    https://github.com/CorentinGC/reddit-place-kcorp/raw/main/kcorp.user.js
 // @downloadURL  https://github.com/CorentinGC/reddit-place-kcorp/raw/main/kcorp.user.js
 // @description  On va récuperer ce qui nous est du de droit.
