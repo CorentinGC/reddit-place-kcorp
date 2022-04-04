@@ -27,7 +27,7 @@ if (window.top !== window.self) {
                 if(event.key == "F4"){
                     if (i.style.display === "none") {
                         i.style.display = "block";
-                        i.style.src = overlayURL()
+                        i.src = overlayURL();
                     } else {
                         i.style.display = "none";
                     }
