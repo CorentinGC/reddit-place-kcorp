@@ -14,7 +14,7 @@ if (window.top !== window.self) {
         (function () {
             const i = document.createElement("img");
             i.src = "https://github.com/CorentinGC/reddit-place-kcorp/raw/main/overlay.png";
-            i.style = "position: absolute;left: 0;top: 0;image-rendering: pixelated;width: 2000px;height: 2000px;";
+            i.style = "position: absolute;left: 0;top: 0;image-rendering: pixelated;width: 2000px;height: 2000px;z-index: 1000;";
             console.log(i);
             document.addEventListener("keydown", function(event) {
                 if(event.key == "F4"){
