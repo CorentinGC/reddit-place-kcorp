@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Place - Armée de Kameto
 // @namespace    https://github.com/CorentinGC/reddit-place-kcorp
-// @version      0.11a
+// @version      0.11.1
 // @description  On va récuperer ce qui nous est dû de droit.
 // @author       Adcoss95 & CorentinGC
 // @match        https://hot-potato.reddit.com/embed*
@@ -62,7 +62,7 @@ const versionState = (a,b) => {
     let y = b.split('.').map(e=> parseInt(e));
     let z = "";
 
-    for(i=0;i<x.length;i++) {
+    for(let i=0;i<x.length;i++) {
         if(x[i] === y[i]) z+="e";
         else {
             if(x[i] > y[i]) z+="m";
