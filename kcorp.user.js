@@ -6,6 +6,7 @@
 // @author       Adcoss95 & CorentinGC
 // @match        https://hot-potato.reddit.com/embed*
 // @icon         https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/icon.jpg
+// @downloadURL    https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/kcorp.user.js
 // @updateURL    https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/kcorp.user.js
 // ==/UserScript==
 
