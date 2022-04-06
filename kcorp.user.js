@@ -22,8 +22,9 @@ const UPDATE_URL = GM_info.script.updateURL;
 const DISCORD_URL = "https://discord.gg/kameto";
 const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png";
 const VERSION_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/version.json";
+const REDDIT_URL = "https://new.reddit.com/r/place/";
 
-const allowedLangs = ['fr', 'en']
+const allowedLangs = ['fr', 'en'];
 const defaultOpts = {
     OVERLAY_STATE:  true,
     OVERLAY_OPACITY:  1,
@@ -52,41 +53,41 @@ const refreshOpts = () => {
 
 const LANGS = {
     fr: {
-        update_available: "Mise à jour disponible v##0## > v##1## ! Cliquez ici pour l'installer",
+        update_available: "Mise à jour disponible v{{0}} > v{{1}} ! Cliquez ici pour l'installer",
         update_reload: "La page va se recharger dans 5secondes, ou vous pouvez le faire manuellement.",
         show: "Afficher",
         hide: "Cacher",
         enable: "Activer",
         disable: "Désactiver",
         btn_update_script: "Mettre à jour le script",
-        btn_toggle_overlay: "##0## l'overlay (F4)",
+        btn_toggle_overlay: "{{0}} l'overlay",
         btn_refresh_overlay: "Rafraîchir l'overlay",
-        btn_autorefresh_overlay: "##0## l'auto-refresh de l'overlay (##1##s)",
-        btn_toggle_cache: "##0## le cache de l'overlay",
+        btn_autorefresh_overlay: "{{0}} l'auto-refresh de l'overlay ({{1}}s)",
+        btn_toggle_cache: "{{0}} le cache de l'overlay",
         overlay_opacity: "Opacité de l'overlay",
         join_discord: "Rejoindre le discord de Kamet0",
-        by_shadow_team: "KCorp's overlay v##0## par la Team de L'Ombre"
+        by_shadow_team: "KCorp's overlay v{{0}} par la Team de L'Ombre"
     },
     en: {
-        update_available: "`Update available v##0## > v##1## ! Click here to install`",
+        update_available: "`Update available v{{0}} > v{{1}} ! Click here to install`",
         update_reload: "Page will reload after 5seconds, but you can do it manually.",
         show: "Show",
         hide: "Hide",
         enable: "Enable",
         disable: "Disable",
         btn_update_script: "Update script",
-        btn_toggle_overlay : "##0## overlay",
+        btn_toggle_overlay : "{{0}} overlay",
         btn_refresh_overlay: "Refresh overlay",
-        btn_autorefresh_overlay: "##0## overlay's auto-refresh (##1##s)",
-        btn_toggle_cache: "##0## overlay's cache",
+        btn_autorefresh_overlay: "{{0}} overlay's auto-refresh ({{1}}s)",
+        btn_toggle_cache: "{{0}} overlay's cache",
         overlay_opacity: "Overlay's opacity",
         join_discord: "Join Kamet0's discord !",
-        by_shadow_team: "KCorp's overlay v##0## by la Shadow's Team"
+        by_shadow_team: "KCorp's overlay v{{0}} by la Shadow's Team"
     },
-}
+};
 const f = (key, ...vars) => {
     let string = LANGS[opts.LANG][key];
-    if(vars && vars.length > 0) vars.map((e,i) => {string = string ? string.replace("##"+i+'##', vars[i]) : key});
+    if(vars && vars.length > 0) vars.map((e,i) => {string = string ? string.replace("{{"+i+"}}", vars[i]) : key});
     return string;
 }
 
@@ -100,8 +101,8 @@ const open = (link, autoclose=false) => {
 }
 
 const versionState = (a,b) => {
-    let x = a.split('.').map(e=> parseInt(e));
-    let y = b.split('.').map(e=> parseInt(e));
+    let x = a.split(".").map(e=> parseInt(e));
+    let y = b.split(".").map(e=> parseInt(e));
     let z = "";
 
     for(let i=0;i<x.length;i++) {
@@ -112,22 +113,22 @@ const versionState = (a,b) => {
         }
     }
     if (!z.match(/[l|m]/g)) return 0;
-    else if (z.split('e').join('')[0] == "m") return 1;
+    else if (z.split("e").join("")[0] == "m") return 1;
     return -1;
 }
 const checkVersion = () => {
     setInterval(async () => {
         try {
             const response = await fetch(VERSION_URL);
-            if (!response.ok) return console.warn('Couldn\'t get version.json');
+            if (!response.ok) return console.warn("Couldn't get version.json");
             const {version} = await response.json();
 
             const needUpdate = versionState(version, GM_info.script.version) === 1;
             if(needUpdate) showUpdate(version);
         } catch (err) {
-            console.warn('Couldn\'t get orders:', err);
+            console.warn("Couldn't get orders:", err);
         }
-    }, 5000)
+    }, 15000)
 
 }
 const showUpdate = (version) => {
@@ -150,12 +151,12 @@ const showUpdate = (version) => {
     update.style.cursor = "pointer";
     update.id = "kcorp-update";
 
-    let message = document.createTextNode(f('update_available', GM_info.script.version, version));
+    let message = document.createTextNode(f("update_available", GM_info.script.version, version));
     update.appendChild(message);
     document.body.appendChild(update);
     update.addEventListener("click", () => {
         window.top.location = UPDATE_URL;
-        message.textContent = f('update_reload');
+        message.textContent = f("update_reload");
         setTimeout(() => location.reload(), 5000);
     });
 }
@@ -184,10 +185,13 @@ const showUpdate = (version) => {
             log("Found canvasContainer");
 
             let overlay, timer;
+            const updateOverlaySrc = () => {
+                overlay.src = overlayURL();
+            }
             const overlayAutoRefresh = () => {
                 timer = setInterval(() => {
-                    log('Autorefresh done');
-                    showOverlay();
+                    log("Autorefresh done");
+                    updateOverlaySrc();
                 }, opts.AUTOREFRESH_DELAY);
             }
             const showOverlay = () => {
@@ -203,7 +207,7 @@ const showUpdate = (version) => {
                 overlay.style.width = "2000px";
                 overlay.style.height = "2000px";
                 overlay.style.opacity = + opts.OVERLAY_STATE;
-
+                
                 canvasContainer[0].parentNode.appendChild(overlay);
                 log("Overlay reloaded");
             }
@@ -252,17 +256,17 @@ const showUpdate = (version) => {
 
                 // Update Btn
                 const updateBtn = document.createElement("button");
-                updateBtn.innerHTML = f('btn_update_script');
+                updateBtn.innerHTML = f("btn_update_script");
                 defaultStyle(updateBtn);
                 defaultBtn(updateBtn);
                 updateBtn.addEventListener("click", () => {window.top.location = UPDATE_URL});
 
                 // ToggleOverlay Btn
-                const toggleOverlayBtnText = () => f('btn_toggle_overlay', opts.OVERLAY_STATE ? f('hide') : f('show'));
-                const handleOverlayBtn = (btn) => {
+                const toggleOverlayBtnText = () => f("btn_toggle_overlay", opts.OVERLAY_STATE ? f("hide") : f("show"));
+                const handleOverlayBtn = () => {
                     opts.OVERLAY_STATE = !opts.OVERLAY_STATE;
                     saveOpts();
-                    btn.innerHTML = toggleOverlayBtnText();
+                    toggleOverlayBtn.innerHTML = toggleOverlayBtnText();
                     overlay.style.opacity = opts.OVERLAY_STATE ? opts.OVERLAY_OPACITY : 0;
                 }
 
@@ -270,17 +274,17 @@ const showUpdate = (version) => {
                 toggleOverlayBtn.innerHTML = toggleOverlayBtnText();
                 defaultStyle(toggleOverlayBtn);
                 defaultBtn(toggleOverlayBtn);
-                toggleOverlayBtn.addEventListener("click", () => handleOverlayBtn(toggleOverlayBtn));
+                toggleOverlayBtn.addEventListener("click", handleOverlayBtn);
 
                 // Refresh Overlay Btn
                 const refreshOverlayBtn = document.createElement("button");
-                refreshOverlayBtn.innerHTML = f('btn_refresh_overlay');
+                refreshOverlayBtn.innerHTML = f("btn_refresh_overlay");
                 defaultStyle(refreshOverlayBtn);
                 defaultBtn(refreshOverlayBtn);
                 refreshOverlayBtn.addEventListener("click", () => { overlay.src = overlayURL(); });
 
                 // Autorefresh Btn
-                const toggleAutoRefreshBtnText = () => f('btn_autorefresh_overlay', opts.AUTOREFRESH_DELAY ? f('disable') : f('enable'), opts.AUTOREFRESH_DELAY/1000);
+                const toggleAutoRefreshBtnText = () => f("btn_autorefresh_overlay", opts.ENABLE_AUTOREFRESH ? f("disable") : f("enable"), opts.AUTOREFRESH_DELAY/1000);
 
                 const handleAutoRefreshBtn = () => {
                     opts.ENABLE_AUTOREFRESH = !opts.ENABLE_AUTOREFRESH;
@@ -296,7 +300,7 @@ const showUpdate = (version) => {
                 }
 
                 // No cache Btn
-                const toggleNocacheBtnText = () => f("btn_toggle_cache", opts.ENABLE_IMGNOCACHE ? f('disable') : f('enable'));
+                const toggleNocacheBtnText = () => f("btn_toggle_cache", opts.ENABLE_IMGNOCACHE ? f("disable") : f("enable"));
                 const handleNocacheBtn = (btn, state=false) => {
                     opts.ENABLE_IMGNOCACHE = state ? state : !opts.ENABLE_IMGNOCACHE;
                     saveOpts();
@@ -323,11 +327,9 @@ const showUpdate = (version) => {
                         slider.value = opts.OVERLAY_OPACITY;
                         return;
                     }
-                    clearTimeout(timeout);
                     overlay.style.opacity = event.currentTarget.value;
                     opts.OVERLAY_OPACITY = event.currentTarget.value;
-
-                    timeout = setTimeout(() => saveOpts(), 500);
+                    saveOpts();
                 }
 
                 const sliderBlock = document.createElement("div");
@@ -374,12 +376,12 @@ const showUpdate = (version) => {
                     }
 
                     langDiv.appendChild(langSpan);
-                    
+
                     langSpan.addEventListener("click", (event) => {
                         if(opts.LANG === event.target.id) return;
                         opts.LANG = event.target.id;
                         saveOpts();
-                        location.reload();
+                        window.location.replace(REDDIT_URL);
                     })
                 }
                 // Version
@@ -409,10 +411,6 @@ const showUpdate = (version) => {
                 credits.appendChild(versionSpan);
                 embed[0].parentNode.appendChild(credits);
                 log("UI Loaded");
-
-                document.addEventListener("keydown", (event) => {
-                    if (event.key === "F4") return handleOverlayBtn();
-                })
             }
 
             if(opts.ENABLE_AUTOREFRESH) overlayAutoRefresh();
