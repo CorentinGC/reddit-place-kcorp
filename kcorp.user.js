@@ -13,7 +13,7 @@
 // ==/UserScript==
 
 // credits to the osu! logo team for script base !
-const DEBUG = true;
+const DEBUG = false;
 
 const UPDATE_URL = GM_info.script.updateURL;
 const DISCORD_URL = "https://discord.gg/kameto";
@@ -161,11 +161,11 @@ const open = (link, autoclose=false) => {
                     opts.ENABLE_AUTOREFRESH = !opts.ENABLE_AUTOREFRESH;
                     saveOpts();
                     toggleAutorefreshBtn.innerHTML = toggleAutoRefreshBtnText();
-                    
+
                     if(opts.ENABLE_AUTOREFRESH) {
                         overlayAutoRefresh()
                         handleNocacheBtn(toggleNocacheBtn, true)
-                        return 
+                        return
                     }
                     clearInterval(timer)
                 }
@@ -184,7 +184,7 @@ const open = (link, autoclose=false) => {
                 defaultStyle(toggleNocacheBtn);
                 defaultBtn(toggleNocacheBtn);
                 toggleNocacheBtn.addEventListener("click", () => handleNocacheBtn(toggleNocacheBtn));
-  
+
 
 
                 const toggleAutorefreshBtn = document.createElement("button");
