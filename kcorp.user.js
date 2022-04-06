@@ -1,31 +1,29 @@
 // ==UserScript==
 // @name         Reddit Place - Armée de Kameto
 // @namespace    https://github.com/CorentinGC/reddit-place-kcorp
-// @version      0.7
+// @version      0.8
 // @description  On va récuperer ce qui nous est dû de droit.
 // @author       Adcoss95 & CorentinGC
 // @match        https://hot-potato.reddit.com/embed*
-// @icon         https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/icon.png
+// @icon         https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/icon.jpg
 // ==/UserScript==
 
 // credits to the osu! logo team for script base !
-const DEBUG = false;
+const DEBUG = true;
 
 const UPDATE_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/kcorp.user.js";
 const DISCORD_URL = "https://discord.gg/kameto";
-const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.jpg"
+const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png"
 
 let opts = JSON.parse(localStorage.getItem("kc_opts")) || {
     OVERLAY_STATE:  true,
     OVERLAY_OPACITY:  1,
     ENABLE_AUTOREFRESH: false,
-    AUTOREFRESH_DELAY: 5_000,
+    AUTOREFRESH_DELAY: 5000,
     ENABLE_IMGNOCACHE: true,
 }
 const saveOpts = () => localStorage.setItem("kc_opts", JSON.stringify(opts))
 saveOpts();
-
-let START_NOTIFIED = false;
 
 const log = (msg) => DEBUG ? console.log("K-Corp Overlay - ", msg) : null
 const open = (link, autoclose=false) => {
@@ -40,7 +38,6 @@ const open = (link, autoclose=false) => {
         const overlayURL = () => OVERLAY_URL+(opts.ENABLE_IMGNOCACHE ? "?t="+new Date().getTime() : "");
         log({opts});
 
-        let timer;
         window.addEventListener("load", () => {
             log("Searching embed");
             let embed = document.getElementsByTagName("mona-lisa-embed");
@@ -57,8 +54,13 @@ const open = (link, autoclose=false) => {
             if ("undefined" === typeof canvasContainer || canvasContainer.length < 1) return;
             log("Found canvasContainer");
 
-            let overlay
-
+            let overlay, timer
+            const overlayAutoRefresh = () => {
+                timer = setInterval(() => {
+                    log('Autorefresh done')
+                    showOverlay()
+                }, opts.AUTOREFRESH_DELAY);
+            }
             const showOverlay = () => {
                 log("Reloading overlay")
 
@@ -75,7 +77,6 @@ const open = (link, autoclose=false) => {
 
                 canvasContainer[0].parentNode.appendChild(overlay);
 
-                clearInterval(timer);
                 log("Overlay reloaded");
             }
 
@@ -143,17 +144,32 @@ const open = (link, autoclose=false) => {
                 defaultBtn(toggleOverlayBtn);
                 toggleOverlayBtn.addEventListener("click", () => handleOverlayBtn(toggleOverlayBtn));
 
-                // ToggleOverlay Btn
+                // Refresh Overlay Btn
                 const refreshOverlayBtn = document.createElement("button");
                 refreshOverlayBtn.innerHTML = "Rafraîchir l'overlay";
                 defaultStyle(refreshOverlayBtn);
                 defaultBtn(refreshOverlayBtn);
                 refreshOverlayBtn.addEventListener("click", () => { overlay.src = overlayURL(); });
 
+                // Autorefresh Btn
+                const toggleAutoRefreshBtnText = () => (opts.ENABLE_AUTOREFRESH ? "Désactiver" : "Activer")+` l'auto-refresh de l'overlay (${opts.AUTOREFRESH_DELAY/1000}s)`;
+                const handleAutoRefreshBtn = () => {
+                    opts.ENABLE_AUTOREFRESH = !opts.ENABLE_AUTOREFRESH;
+                    saveOpts();
+                    toggleAutorefreshBtn.innerHTML = toggleAutoRefreshBtnText();
+                    
+                    if(opts.ENABLE_AUTOREFRESH) {
+                        overlayAutoRefresh()
+                        handleNocacheBtn(toggleNocacheBtn, true)
+                        return 
+                    }
+                    clearInterval(timer)
+                }
+
                 // No cache Btn
                 const toggleNocacheBtnText = () => (opts.ENABLE_IMGNOCACHE ? "Désactiver" : "Activer")+" le cache de l'overlay";
-                const handleNocacheBtn = (btn) => {
-                    opts.ENABLE_IMGNOCACHE = !opts.ENABLE_IMGNOCACHE;
+                const handleNocacheBtn = (btn, state=false) => {
+                    opts.ENABLE_IMGNOCACHE = state ? state : !opts.ENABLE_IMGNOCACHE;
                     saveOpts();
                     btn.innerHTML = toggleNocacheBtnText();
                     btn.classList.toggle("disable")
@@ -165,14 +181,7 @@ const open = (link, autoclose=false) => {
                 defaultBtn(toggleNocacheBtn);
                 toggleNocacheBtn.addEventListener("click", () => handleNocacheBtn(toggleNocacheBtn));
   
-                // Autorefresh Btn
-                const toggleAutoRefreshBtnText = () => (opts.ENABLE_AUTOREFRESH ? "Désactiver" : "Activer")+` l'auto-refresh de l'overlay (${opts.AUTOREFRESH_DELAY/1000}s)`;
-                const handleAutoRefreshBtn = () => {
-                    opts.ENABLE_AUTOREFRESH = !opts.ENABLE_AUTOREFRESH;
-                    saveOpts();
-                    toggleAutorefreshBtn.innerHTML = toggleAutoRefreshBtnText();
-                    toggleAutorefreshBtn.classList.toggle("disable");
-                }
+
 
                 const toggleAutorefreshBtn = document.createElement("button");
                 toggleAutorefreshBtn.innerHTML = toggleAutoRefreshBtnText();
@@ -250,10 +259,8 @@ const open = (link, autoclose=false) => {
                 })
             }
 
-            if(opts.ENABLE_AUTOREFRESH) {
-                timer = setInterval(() => showOverlay(), opts.AUTOREFRESH_DELAY);
-                showOverlay();
-            } else showOverlay();
+            if(opts.ENABLE_AUTOREFRESH) overlayAutoRefresh();
+            showOverlay();
             showUi();
         }, false);
     }
