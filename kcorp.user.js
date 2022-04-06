@@ -150,7 +150,7 @@ const showUpdate = (version) => {
     update.style.cursor = "pointer";
     update.id = "kcorp-update";
 
-    let message = document.createTextNode(f('update_available', "GM_info.script.version", "version"));
+    let message = document.createTextNode(f('update_available', GM_info.script.version, version));
     update.appendChild(message);
     document.body.appendChild(update);
     update.addEventListener("click", () => {
