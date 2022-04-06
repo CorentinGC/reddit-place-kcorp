@@ -23,6 +23,7 @@ const DISCORD_URL = "https://discord.gg/kameto";
 const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png";
 const VERSION_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/version.json";
 
+const allowedLangs = ['fr', 'en']
 const defaultOpts = {
     OVERLAY_STATE:  true,
     OVERLAY_OPACITY:  1,
@@ -30,6 +31,7 @@ const defaultOpts = {
     AUTOREFRESH_DELAY: 5000,
     ENABLE_IMGNOCACHE: true,
     VERSION: GM_info.script.version,
+    LANG: allowedLangs[0]
 };
 let opts = JSON.parse(localStorage.getItem("kc_opts")) || defaultOpts;
 
@@ -47,6 +49,47 @@ const refreshOpts = () => {
     }
     saveOpts();
 }
+
+const LANGS = {
+    fr: {
+        update_available: "Mise à jour disponible v##0## > v##1## ! Cliquez ici pour l'installer",
+        update_reload: "La page va se recharger dans 5secondes, ou vous pouvez le faire manuellement.",
+        show: "Afficher",
+        hide: "Cacher",
+        enable: "Activer",
+        disable: "Désactiver",
+        btn_update_script: "Mettre à jour le script",
+        btn_toggle_overlay: "##0## l'overlay (F4)",
+        btn_refresh_overlay: "Rafraîchir l'overlay",
+        btn_autorefresh_overlay: "##0## l'auto-refresh de l'overlay (##1##s)",
+        btn_toggle_cache: "##0## le cache de l'overlay",
+        overlay_opacity: "Opacité de l'overlay",
+        join_discord: "Rejoindre le discord de Kamet0",
+        by_shadow_team: "KCorp's overlay v##0## par la Team de L'Ombre"
+    },
+    en: {
+        update_available: "`Update available v##0## > v##1## ! Click here to install`",
+        update_reload: "Page will reload after 5seconds, but you can do it manually.",
+        show: "Show",
+        hide: "Hide",
+        enable: "Enable",
+        disable: "Disable",
+        btn_update_script: "Update script",
+        btn_toggle_overlay : "##0## overlay",
+        btn_refresh_overlay: "Refresh overlay",
+        btn_autorefresh_overlay: "##0## overlay's auto-refresh (##1##s)",
+        btn_toggle_cache: "##0## overlay's cache",
+        overlay_opacity: "Overlay's opacity",
+        join_discord: "Join Kamet0's discord !",
+        by_shadow_team: "KCorp's overlay v##0## by la Shadow's Team"
+    },
+}
+const f = (key, ...vars) => {
+    let string = LANGS[opts.LANG][key];
+    if(vars && vars.length > 0) vars.map((e,i) => {string = string ? string.replace("##"+i+'##', vars[i]) : key});
+    return string;
+}
+
 if(window.top !== window.self) refreshOpts();
 
 const log = (msg) => DEBUG ? console.log("K-Corp Overlay - ", msg) : null
@@ -107,13 +150,13 @@ const showUpdate = (version) => {
     update.style.cursor = "pointer";
     update.id = "kcorp-update";
 
-    let message = document.createTextNode(`Mise à jour disponible v${GM_info.script.version} > v${version} ! Cliquez ici pour l'installer`);
+    let message = document.createTextNode(f('update_available', "GM_info.script.version", "version"));
     update.appendChild(message);
     document.body.appendChild(update);
     update.addEventListener("click", () => {
         window.top.location = UPDATE_URL;
-        message.textContent = "La page va se recharger dans 5secondes, ou vous pouvez le faire manuellement.";
-        setTimeout(() =>  location.reload(), 5000);
+        message.textContent = f('update_reload');
+        setTimeout(() => location.reload(), 5000);
     });
 }
 
@@ -209,13 +252,13 @@ const showUpdate = (version) => {
 
                 // Update Btn
                 const updateBtn = document.createElement("button");
-                updateBtn.innerHTML = "Mettre à jour le script";
+                updateBtn.innerHTML = f('btn_update_script');
                 defaultStyle(updateBtn);
                 defaultBtn(updateBtn);
                 updateBtn.addEventListener("click", () => {window.top.location = UPDATE_URL});
 
                 // ToggleOverlay Btn
-                const toggleOverlayBtnText = () => (opts.OVERLAY_STATE ? "Cacher" : "Afficher")+" l'overlay (F4)";
+                const toggleOverlayBtnText = () => f('btn_toggle_overlay', opts.OVERLAY_STATE ? f('hide') : f('show'));
                 const handleOverlayBtn = (btn) => {
                     opts.OVERLAY_STATE = !opts.OVERLAY_STATE;
                     saveOpts();
@@ -231,13 +274,14 @@ const showUpdate = (version) => {
 
                 // Refresh Overlay Btn
                 const refreshOverlayBtn = document.createElement("button");
-                refreshOverlayBtn.innerHTML = "Rafraîchir l'overlay";
+                refreshOverlayBtn.innerHTML = f('btn_refresh_overlay');
                 defaultStyle(refreshOverlayBtn);
                 defaultBtn(refreshOverlayBtn);
                 refreshOverlayBtn.addEventListener("click", () => { overlay.src = overlayURL(); });
 
                 // Autorefresh Btn
-                const toggleAutoRefreshBtnText = () => (opts.ENABLE_AUTOREFRESH ? "Désactiver" : "Activer")+` l'auto-refresh de l'overlay (${opts.AUTOREFRESH_DELAY/1000}s)`;
+                const toggleAutoRefreshBtnText = () => f('btn_autorefresh_overlay', opts.AUTOREFRESH_DELAY ? f('disable') : f('enable'), opts.AUTOREFRESH_DELAY/1000);
+
                 const handleAutoRefreshBtn = () => {
                     opts.ENABLE_AUTOREFRESH = !opts.ENABLE_AUTOREFRESH;
                     saveOpts();
@@ -252,7 +296,7 @@ const showUpdate = (version) => {
                 }
 
                 // No cache Btn
-                const toggleNocacheBtnText = () => (opts.ENABLE_IMGNOCACHE ? "Désactiver" : "Activer")+" le cache de l'overlay";
+                const toggleNocacheBtnText = () => f("btn_toggle_cache", opts.ENABLE_IMGNOCACHE ? f('disable') : f('enable'));
                 const handleNocacheBtn = (btn, state=false) => {
                     opts.ENABLE_IMGNOCACHE = state ? state : !opts.ENABLE_IMGNOCACHE;
                     saveOpts();
@@ -290,7 +334,7 @@ const showUpdate = (version) => {
                 defaultStyle(sliderBlock);
                 defaultBlock(sliderBlock);
 
-                const sliderText = document.createTextNode("Opacité du calque");
+                const sliderText = document.createTextNode(f("overlay_opacity"));
                 const slider = document.createElement("input");
                 slider.type = "range";
                 slider.min = 0;
@@ -305,17 +349,45 @@ const showUpdate = (version) => {
 
                 // Discord Btn
                 const discordBtn = document.createElement("button");
-                discordBtn.innerHTML = "Rejoindre le discord de Kamet0";
+                discordBtn.innerHTML = f("join_discord");
                 defaultStyle(discordBtn);
                 defaultBtn(discordBtn);
                 discordBtn.addEventListener("click", () => open(DISCORD_URL));
 
+                const langDiv = document.createElement("div");
+                defaultBlock(langDiv);
+                for(let lang of allowedLangs){
+                    const langSpan = document.createElement("span");
+                    langSpan.innerHTML = lang
+                    langSpan.style.cursor = "pointer";
+                    langSpan.style.padding = "10px";
+                    langSpan.style.margin = "0 5px";
+                    langSpan.style.border = "1px solid rgba(0,0,0,0.3)";
+                    langSpan.style.borderRadius = "5px";
+                    langSpan.style.background = "white";
+                    langSpan.style.color = "black";
+                    langSpan.style.textTransform = "uppercase";
+                    langSpan.id = lang
+                    if(opts.LANG === lang) {
+                        langSpan.style.backgroundColor = "#c3c3c3";
+                        langSpan.style.cursor = "not-allowed";
+                    }
+
+                    langDiv.appendChild(langSpan);
+                    
+                    langSpan.addEventListener("click", (event) => {
+                        if(opts.LANG === event.target.id) return;
+                        opts.LANG = event.target.id;
+                        saveOpts();
+                        location.reload();
+                    })
+                }
                 // Version
                 const credits = document.createElement("div");
                 credits.id = "kc-credits";
 
                 const versionSpan = document.createElement("span");
-                versionSpan.innerHTML = `KCorp's overlay v${GM_info.script.version} par la Team de L'Ombre`;
+                versionSpan.innerHTML = f("by_shadow_team", GM_info.script.version);
                 versionSpan.style.position = "fixed";
                 versionSpan.style.bottom = "10px";
                 versionSpan.style.right = "10px";
@@ -330,6 +402,7 @@ const showUpdate = (version) => {
                 control.appendChild(toggleNocacheBtn);
                 control.appendChild(sliderBlock);
                 control.appendChild(discordBtn);
+                control.appendChild(langDiv);
 
                 embed[0].parentNode.appendChild(control);
 
