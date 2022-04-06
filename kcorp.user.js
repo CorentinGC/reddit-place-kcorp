@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Place - Armée de Kameto
 // @namespace    https://github.com/CorentinGC/reddit-place-kcorp
-// @version      0.9
+// @version      0.10
 // @description  On va récuperer ce qui nous est dû de droit.
 // @author       Adcoss95 & CorentinGC
 // @match        https://hot-potato.reddit.com/embed*
@@ -17,7 +17,7 @@ const DEBUG = false;
 
 const UPDATE_URL = GM_info.script.updateURL;
 const DISCORD_URL = "https://discord.gg/kameto";
-const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png"
+const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png";
 
 let opts = JSON.parse(localStorage.getItem("kc_opts")) || {
     OVERLAY_STATE:  true,
@@ -26,18 +26,18 @@ let opts = JSON.parse(localStorage.getItem("kc_opts")) || {
     AUTOREFRESH_DELAY: 5000,
     ENABLE_IMGNOCACHE: true,
 }
-const saveOpts = () => localStorage.setItem("kc_opts", JSON.stringify(opts))
+const saveOpts = () => localStorage.setItem("kc_opts", JSON.stringify(opts));
 saveOpts();
 
 const log = (msg) => DEBUG ? console.log("K-Corp Overlay - ", msg) : null
 const open = (link, autoclose=false) => {
-    let tab = window.open(link, "_blank")
-    tab.focus()
-    if(autoclose) setTimeout(() => tab.close(), 25)
+    let tab = window.open(link, "_blank");
+    tab.focus();
+    if(autoclose) setTimeout(() => tab.close(), 25);
 }
 
 (async function() {
-    log("Loading KCorp module")
+    log("Loading KCorp module");
     if (window.top !== window.self) {
         const overlayURL = () => OVERLAY_URL+(opts.ENABLE_IMGNOCACHE ? "?t="+new Date().getTime() : "");
         log({opts});
@@ -66,7 +66,7 @@ const open = (link, autoclose=false) => {
                 }, opts.AUTOREFRESH_DELAY);
             }
             const showOverlay = () => {
-                log("Reloading overlay")
+                log("Reloading overlay");
 
                 overlay = document.createElement("img");
                 overlay.src = overlayURL();
@@ -139,7 +139,7 @@ const open = (link, autoclose=false) => {
                     opts.OVERLAY_STATE = !opts.OVERLAY_STATE;
                     saveOpts();
                     btn.innerHTML = toggleOverlayBtnText();
-                    overlay.style.opacity = opts.OVERLAY_STATE ? parseInt(opts.OVERLAY_OPACITY) : 0;
+                    overlay.style.opacity = opts.OVERLAY_STATE ? opts.OVERLAY_OPACITY : 0;
                 }
 
                 const toggleOverlayBtn = document.createElement("button");
@@ -163,11 +163,11 @@ const open = (link, autoclose=false) => {
                     toggleAutorefreshBtn.innerHTML = toggleAutoRefreshBtnText();
 
                     if(opts.ENABLE_AUTOREFRESH) {
-                        overlayAutoRefresh()
-                        handleNocacheBtn(toggleNocacheBtn, true)
-                        return
+                        overlayAutoRefresh();
+                        handleNocacheBtn(toggleNocacheBtn, true);
+                        return;
                     }
-                    clearInterval(timer)
+                    clearInterval(timer);
                 }
 
                 // No cache Btn
@@ -176,7 +176,7 @@ const open = (link, autoclose=false) => {
                     opts.ENABLE_IMGNOCACHE = state ? state : !opts.ENABLE_IMGNOCACHE;
                     saveOpts();
                     btn.innerHTML = toggleNocacheBtnText();
-                    btn.classList.toggle("disable")
+                    btn.classList.toggle("disable");
                 }
 
                 const toggleNocacheBtn = document.createElement("button");
@@ -185,8 +185,6 @@ const open = (link, autoclose=false) => {
                 defaultBtn(toggleNocacheBtn);
                 toggleNocacheBtn.addEventListener("click", () => handleNocacheBtn(toggleNocacheBtn));
 
-
-
                 const toggleAutorefreshBtn = document.createElement("button");
                 toggleAutorefreshBtn.innerHTML = toggleAutoRefreshBtnText();
                 defaultStyle(toggleAutorefreshBtn);
@@ -194,7 +192,7 @@ const open = (link, autoclose=false) => {
                 toggleAutorefreshBtn.addEventListener("click", () => handleAutoRefreshBtn(toggleAutorefreshBtn));
 
                 // Opacity slider / @cchanche PR #27
-                let timeout
+                let timeout;
                 const handleSlider = (event) => {
                     if(!opts.OVERLAY_STATE) {
                         slider.value = opts.OVERLAY_OPACITY;
@@ -219,8 +217,8 @@ const open = (link, autoclose=false) => {
                 slider.step = 0.05;
                 slider.value = opts.OVERLAY_OPACITY;
                 slider.boder = "1px solid rgba(0,0,0,0.3)";
-                sliderBlock.appendChild(sliderText)
-                sliderBlock.appendChild(slider)
+                sliderBlock.appendChild(sliderText);
+                sliderBlock.appendChild(slider);
 
                 slider.addEventListener("input", (event) => handleSlider(event));
 
@@ -268,5 +266,5 @@ const open = (link, autoclose=false) => {
             showUi();
         }, false);
     }
-    log("KCorp module loaded")
+    log("KCorp module loaded");
 })();
