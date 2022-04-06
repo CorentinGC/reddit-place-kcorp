@@ -13,7 +13,7 @@ const DEBUG = false;
 
 const UPDATE_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/kcorp.user.js";
 const DISCORD_URL = "https://discord.gg/kameto";
-const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png"
+const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.jpg"
 
 let opts = JSON.parse(localStorage.getItem("kc_opts")) || {
     OVERLAY_STATE:  true,
