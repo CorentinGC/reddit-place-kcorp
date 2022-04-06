@@ -1,4 +1,4 @@
-<img src="https://upload.wikimedia.org/wikipedia/commons/b/bd/CC-BY-NC-SA.svg" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/b/bd/CC-BY-NC-SA.svg" width="80" />
+<img src="https://upload.wikimedia.org/wikipedia/commons/b/bd/CC-BY-NC-SA.svg" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/b/bd/CC-BY-NC-SA.svg" width="100" />
 
 # reddit-place-kcorp
 original authors : 
