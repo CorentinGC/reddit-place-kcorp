@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Place - Armée de Kameto
 // @namespace    https://github.com/CorentinGC/reddit-place-kcorp
-// @version      0.11.3
+// @version      0.12
 // @description  On va récuperer ce qui nous est dû de droit.
 // @author       Adcoss95 & CorentinGC
 // @match        https://hot-potato.reddit.com/embed*
