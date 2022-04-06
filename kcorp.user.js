@@ -18,7 +18,7 @@ const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-k
 let opts = JSON.parse(localStorage.getItem("kc_opts")) || {
     OVERLAY_STATE:  true,
     OVERLAY_OPACITY:  1,
-    ENABLE_AUTOREFRESH: true,
+    ENABLE_AUTOREFRESH: false,
     AUTOREFRESH_DELAY: 5_000,
     ENABLE_IMGNOCACHE: true,
 }
