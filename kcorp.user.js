@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Place - Armée de Kameto
 // @namespace    https://github.com/CorentinGC/reddit-place-kcorp
-// @version      0.11
+// @version      0.11a
 // @description  On va récuperer ce qui nous est dû de droit.
 // @author       Adcoss95 & CorentinGC
 // @match        https://hot-potato.reddit.com/embed*
@@ -24,15 +24,31 @@ const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-k
 
 const VERSION_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/version.json";
 
-let opts = JSON.parse(localStorage.getItem("kc_opts")) || {
+const defaultOpts = {
     OVERLAY_STATE:  true,
     OVERLAY_OPACITY:  1,
     ENABLE_AUTOREFRESH: false,
     AUTOREFRESH_DELAY: 5000,
     ENABLE_IMGNOCACHE: true,
+    VERSION: GM_info.script.version,
 }
+let opts = JSON.parse(localStorage.getItem("kc_opts")) || defaultOpts;
+
 const saveOpts = () => localStorage.setItem("kc_opts", JSON.stringify(opts));
-saveOpts();
+const refreshOpts = () => {
+    if(GM_info.script.version !== opts.VERSION){
+        opts = {
+            ...defaultOpts, 
+            ...opts,
+            VERSION: GM_info.script.version
+        };
+        for(let opt in opts){
+            if(!defaultOpts[opt]) delete opts[opt];
+        }
+    }
+    saveOpts();
+}
+refreshOpts();
 
 const log = (msg) => DEBUG ? console.log("K-Corp Overlay - ", msg) : null
 const open = (link, autoclose=false) => {
@@ -41,13 +57,31 @@ const open = (link, autoclose=false) => {
     if(autoclose) setTimeout(() => tab.close(), 25);
 }
 
+const versionState = (a,b) => {
+    let x = a.split('.').map(e=> parseInt(e));
+    let y = b.split('.').map(e=> parseInt(e));
+    let z = "";
+
+    for(i=0;i<x.length;i++) {
+        if(x[i] === y[i]) z+="e";
+        else {
+            if(x[i] > y[i]) z+="m";
+            else z+="l";
+        }
+    }
+    if (!z.match(/[l|m]/g)) return 0;
+    else if (z.split('e').join('')[0] == "m") return 1;
+    return -1;
+}
 const checkVersion = () => {
     setInterval(async () => {
         try {
             const response = await fetch(VERSION_URL);
             if (!response.ok) return console.warn('Couldn\'t get version.json');
             const {version} = await response.json();
-            if(version !== GM_info.script.version) showUpdate(version);
+
+            const needUpdate = versionState(version, GM_info.script.version) === 1;
+            if(needUpdate) showUpdate(version);
         } catch (err) {
             console.warn('Couldn\'t get orders:', err);
         }
@@ -55,13 +89,13 @@ const checkVersion = () => {
 
 }
 const showUpdate = (version) => {
-    if(document.getElementById("kcorp-update") ) return;
+    if(document.getElementById("kcorp-update")) return;
 
     const update = document.createElement("div");
     update.style.position = "fixed";
     update.style.background = "white";
     update.style.right = "10px";
-    update.style.width = "575px";
+    update.style.padding = "0 10px";
     update.style.textAlign = "center";
     update.style.color = "red";
     update.style.top = "65px";
@@ -77,7 +111,11 @@ const showUpdate = (version) => {
     let message = document.createTextNode(`Mise à jour disponible v${GM_info.script.version} > v${version} ! Clique ici pour l'installer`);
     update.appendChild(message);
     document.body.appendChild(update);
-    update.addEventListener("click", () => {window.top.location = UPDATE_URL});
+    update.addEventListener("click", () => {
+        window.top.location = UPDATE_URL;
+        message.textContent = "La page va se recharger dans 5secondes, ou vous pouvez le faire manuellement."
+        setTimeout(() =>  location.reload(), 5000);
+    });
 }
 
 (async function() {
