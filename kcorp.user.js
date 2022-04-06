@@ -47,7 +47,7 @@ const refreshOpts = () => {
     }
     saveOpts();
 }
-if(window.top === window.self) refreshOpts();
+if(window.top !== window.self) refreshOpts();
 
 const log = (msg) => DEBUG ? console.log("K-Corp Overlay - ", msg) : null
 const open = (link, autoclose=false) => {
