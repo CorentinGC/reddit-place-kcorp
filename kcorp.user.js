@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Place - Armée de Kameto
 // @namespace    https://github.com/CorentinGC/reddit-place-kcorp
-// @version      0.11.1
+// @version      0.11.2
 // @description  On va récuperer ce qui nous est dû de droit.
 // @author       Adcoss95 & CorentinGC
 // @match        https://hot-potato.reddit.com/embed*
@@ -21,7 +21,6 @@ const DEBUG = false;
 const UPDATE_URL = GM_info.script.updateURL;
 const DISCORD_URL = "https://discord.gg/kameto";
 const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png";
-
 const VERSION_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/version.json";
 
 const defaultOpts = {
@@ -31,14 +30,14 @@ const defaultOpts = {
     AUTOREFRESH_DELAY: 5000,
     ENABLE_IMGNOCACHE: true,
     VERSION: GM_info.script.version,
-}
+};
 let opts = JSON.parse(localStorage.getItem("kc_opts")) || defaultOpts;
 
 const saveOpts = () => localStorage.setItem("kc_opts", JSON.stringify(opts));
 const refreshOpts = () => {
     if(GM_info.script.version !== opts.VERSION){
         opts = {
-            ...defaultOpts, 
+            ...defaultOpts,
             ...opts,
             VERSION: GM_info.script.version
         };
@@ -48,7 +47,7 @@ const refreshOpts = () => {
     }
     saveOpts();
 }
-refreshOpts();
+if(window.top === window.self) refreshOpts();
 
 const log = (msg) => DEBUG ? console.log("K-Corp Overlay - ", msg) : null
 const open = (link, autoclose=false) => {
@@ -108,12 +107,12 @@ const showUpdate = (version) => {
     update.style.cursor = "pointer";
     update.id = "kcorp-update";
 
-    let message = document.createTextNode(`Mise à jour disponible v${GM_info.script.version} > v${version} ! Clique ici pour l'installer`);
+    let message = document.createTextNode(`Mise à jour disponible v${GM_info.script.version} > v${version} ! Cliquez ici pour l'installer`);
     update.appendChild(message);
     document.body.appendChild(update);
     update.addEventListener("click", () => {
         window.top.location = UPDATE_URL;
-        message.textContent = "La page va se recharger dans 5secondes, ou vous pouvez le faire manuellement."
+        message.textContent = "La page va se recharger dans 5secondes, ou vous pouvez le faire manuellement.";
         setTimeout(() =>  location.reload(), 5000);
     });
 }
@@ -141,11 +140,11 @@ const showUpdate = (version) => {
             if ("undefined" === typeof canvasContainer || canvasContainer.length < 1) return;
             log("Found canvasContainer");
 
-            let overlay, timer
+            let overlay, timer;
             const overlayAutoRefresh = () => {
                 timer = setInterval(() => {
-                    log('Autorefresh done')
-                    showOverlay()
+                    log('Autorefresh done');
+                    showOverlay();
                 }, opts.AUTOREFRESH_DELAY);
             }
             const showOverlay = () => {
@@ -278,13 +277,13 @@ const showUpdate = (version) => {
                 const handleSlider = (event) => {
                     if(!opts.OVERLAY_STATE) {
                         slider.value = opts.OVERLAY_OPACITY;
-                        return
+                        return;
                     }
                     clearTimeout(timeout);
                     overlay.style.opacity = event.currentTarget.value;
                     opts.OVERLAY_OPACITY = event.currentTarget.value;
 
-                    timeout = setTimeout(() => saveOpts(), 500)
+                    timeout = setTimeout(() => saveOpts(), 500);
                 }
 
                 const sliderBlock = document.createElement("div");
