@@ -1,15 +1,18 @@
 // ==UserScript==
 // @name         Reddit Place - Armée de Kameto
 // @namespace    https://github.com/CorentinGC/reddit-place-kcorp
-// @version      0.10
+// @version      0.11
 // @description  On va récuperer ce qui nous est dû de droit.
 // @author       Adcoss95 & CorentinGC
 // @match        https://hot-potato.reddit.com/embed*
+// @match        https://new.reddit.com/r/place/*
+// @match        https://www.reddit.com/r/place/*
 // @icon         https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/icon.jpg
 // @grant        none
 // @downloadURL  https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/kcorp.user.js
 // @updateURL    https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/kcorp.user.js
 // @supportURL   https://github.com/CorentinGC/reddit-place-kcorp/issues
+
 // ==/UserScript==
 
 // credits to the osu! logo team for script base !
@@ -18,6 +21,8 @@ const DEBUG = false;
 const UPDATE_URL = GM_info.script.updateURL;
 const DISCORD_URL = "https://discord.gg/kameto";
 const OVERLAY_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/overlay.png";
+
+const VERSION_URL = "https://raw.githubusercontent.com/CorentinGC/reddit-place-kcorp/main/version.json";
 
 let opts = JSON.parse(localStorage.getItem("kc_opts")) || {
     OVERLAY_STATE:  true,
@@ -36,8 +41,48 @@ const open = (link, autoclose=false) => {
     if(autoclose) setTimeout(() => tab.close(), 25);
 }
 
+const checkVersion = () => {
+    setInterval(async () => {
+        try {
+            const response = await fetch(VERSION_URL);
+            if (!response.ok) return console.warn('Couldn\'t get version.json');
+            const {version} = await response.json();
+            if(version !== GM_info.script.version) showUpdate(version);
+        } catch (err) {
+            console.warn('Couldn\'t get orders:', err);
+        }
+    }, 5000)
+
+}
+const showUpdate = (version) => {
+    if(document.getElementById("kcorp-update") ) return;
+
+    const update = document.createElement("div");
+    update.style.position = "fixed";
+    update.style.background = "white";
+    update.style.right = "10px";
+    update.style.width = "575px";
+    update.style.textAlign = "center";
+    update.style.color = "red";
+    update.style.top = "65px";
+    update.style.zIndex = 1000;
+    update.style.height = "40px";
+    update.style.lineHeight = "40px";
+    update.style.border = "1px solid rgba(0,0,0,0.3)";
+    update.style.borderRadius = "10px";
+    update.style.fontSize = "1.3em";
+    update.style.cursor = "pointer";
+    update.id = "kcorp-update";
+
+    let message = document.createTextNode(`Mise à jour disponible v${GM_info.script.version} > v${version} ! Clique ici pour l'installer`);
+    update.appendChild(message);
+    document.body.appendChild(update);
+    update.addEventListener("click", () => {window.top.location = UPDATE_URL});
+}
+
 (async function() {
     log("Loading KCorp module");
+
     if (window.top !== window.self) {
         const overlayURL = () => OVERLAY_URL+(opts.ENABLE_IMGNOCACHE ? "?t="+new Date().getTime() : "");
         log({opts});
@@ -80,7 +125,6 @@ const open = (link, autoclose=false) => {
                 overlay.style.opacity = + opts.OVERLAY_STATE;
 
                 canvasContainer[0].parentNode.appendChild(overlay);
-
                 log("Overlay reloaded");
             }
 
@@ -131,7 +175,7 @@ const open = (link, autoclose=false) => {
                 updateBtn.innerHTML = "Mettre à jour le script";
                 defaultStyle(updateBtn);
                 defaultBtn(updateBtn);
-                updateBtn.addEventListener("click", () => open(UPDATE_URL, true));
+                updateBtn.addEventListener("click", () => {window.top.location = UPDATE_URL});
 
                 // ToggleOverlay Btn
                 const toggleOverlayBtnText = () => (opts.OVERLAY_STATE ? "Cacher" : "Afficher")+" l'overlay (F4)";
@@ -266,5 +310,9 @@ const open = (link, autoclose=false) => {
             showUi();
         }, false);
     }
+    else checkVersion();
     log("KCorp module loaded");
 })();
+
+
+
