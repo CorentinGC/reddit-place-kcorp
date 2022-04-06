@@ -321,7 +321,6 @@ const showUpdate = (version) => {
                 toggleAutorefreshBtn.addEventListener("click", () => handleAutoRefreshBtn(toggleAutorefreshBtn));
 
                 // Opacity slider / @cchanche PR #27
-                let timeout;
                 const handleSlider = (event) => {
                     if(!opts.OVERLAY_STATE) {
                         slider.value = opts.OVERLAY_OPACITY;
@@ -381,7 +380,7 @@ const showUpdate = (version) => {
                         if(opts.LANG === event.target.id) return;
                         opts.LANG = event.target.id;
                         saveOpts();
-                        window.location.replace(REDDIT_URL);
+                        window.location.href = REDDIT_URL;
                     })
                 }
                 // Version
@@ -417,8 +416,7 @@ const showUpdate = (version) => {
             showOverlay();
             showUi();
         }, false);
-    }
-    else checkVersion();
+    } else checkVersion()
     log("KCorp module loaded");
 })();
 
